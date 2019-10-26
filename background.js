@@ -105,6 +105,45 @@ function countParagraphs() {
     return paragraphCount;
 }
 
+// Call function to set update() on a timed loop
+
+// NEED A BETTER WAY TO RUN THE UPDATE() CONTINUOUSLY - SHOULD BE ON/OFF
+function runUpdates() {
+    setInterval(update, 200);
+}
+
+// Counts paragraphs and words on the document and updates values in storage.local if
+// any values have changed.
+function update() {
+    let pCount = countParagraphs();
+    let wCount = countWords();
+
+    // need to determine how to read in this data correctly.
+    const addValues = (pCount, wCount) => {
+        chrome.storage.local.get(['paragraphCount'], function(result) {
+            if (result.paragraphCount === undefined) {
+                chrome.storage.local.set({"paragraphCount" : pCount});
+            }
+            else if (result.paragraphCount !== pCount){
+                chrome.storage.local.set({"paragraphCount" : pCount});
+    
+            }
+        });
+
+        chrome.storage.local.get(['wordCount'], function(result) {
+            if (result.wordCount === undefined) {
+                chrome.storage.local.set({"wordCount" : wCount});
+            }
+            else if (result.wordCount !== wCount){
+                chrome.storage.local.set({"wordCount" : wCount});
+    
+            }
+        });
+    };
+
+    addValues(pCount, wCount);
+}
+
 // ON INSTALL OPERATIONS
 chrome.runtime.onInstalled.addListener(()=>{
     // Initialize USER_DATA field with intended structure:
@@ -130,7 +169,6 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
 		actions: [new chrome.declarativeContent.ShowPageAction()]
 	}]);
 });
-
 
 // When new tab is created run script if its url matches regex for open Google doc
 chrome.tabs.onCreated.addListener((tab)=> {
