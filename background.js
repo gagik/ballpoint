@@ -1,5 +1,5 @@
 // CONSTANTS
-const DOC_REGEX = /https:\/\/docs\.google\.com\/document\/d(.*)\//;
+const DOC_REGEX = /https:\/\/docs\.google\.com\/document\/d\/(.*)\//;
 const USER_DATA = "USER_DATA";
 const PREF_STATUS = "prefStatus";
 const DOC_INFO = "docInfo";
