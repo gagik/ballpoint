@@ -1,6 +1,19 @@
 // CONSTANTS
-const DOC_REGEX = /https:\/\/docs\.google\.com\/document\/d.*/;
-
+const DOC_REGEX = /https:\/\/docs\.google\.com\/document\/d(.*)\//;
+const USER_DATA = "USER_DATA";
+const PREF_STATUS = "prefStatus";
+const DOC_INFO = "docInfo";
+const WORD_COUNT = "wordCount";
+const PAR_COUNT = "paragraphCount";
+const TIME_EDITING = "timeEditingInSec";
+const NEW_DOC_INFO = {
+    PREF_STATUS: {},
+    DOC_INFO   : {
+        WORD_COUNT: 0,
+        PAR_COUNT : 0,
+        TIME_EDITING: 0
+    }
+};
 // FUNCTIONS
 
 // Return True if input string url matches active Google Doc url structure
@@ -19,6 +32,19 @@ function initialize() {
 
 // ON INSTALL OPERATIONS
 chrome.runtime.onInstalled.addListener(()=>{
+    // Initialize USER_DATA field with intended structure:
+    // {
+    //   <doc_id> : {
+    //      prefStatus : {},
+    //      docInfo: {}
+    //    }
+    // }
+    chrome.storage.sync.set({
+        USER_DATA: {}
+    }, (result) => {
+        console.log("Initialized USER_DATA: " + result);
+    });
+
     // Take user to options/about page
 });
 
