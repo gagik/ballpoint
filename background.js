@@ -30,9 +30,24 @@ function initialize() {
 
 }
 
+// Intended for Google Docs. Counts and returns the number of words on the current document
+function countWords() {
+    let page = document.getElementsByClassName("kix-zoomdocumentplugin-outer")[0];
+    if (page == null) {
+        alert("Element does not exist on the document.")
+    }
+    const pageText = page.innerText;
+    const words = pageText.split(" ");
+    
+    return words.length; 
+}
+
 // Intended for Google Docs. Counts and returns the number of lines on the current document
 function countLines() {
     let page = document.getElementsByClassName("kix-zoomdocumentplugin-outer")[0];
+    if (page == null) {
+        alert("Element does not exist on the document.")
+    }
     let lineCount = 0;
     const pageText = page.innerText;
 
@@ -53,6 +68,9 @@ function countParagraphs() {
     const TABSPACE = 9;
 
     let page = document.getElementsByClassName("kix-zoomdocumentplugin-outer")[0];
+    if (page == null) {
+        alert("Element does not exist on the document.")
+    }
     let paragraphCount = 0;
     let isConsecutive = false;
     let isCounted = false;
