@@ -41,9 +41,8 @@ function wordCheck(wordCount, wordTarget) {
 }
 // Check if doc_id has already been saved. If yes, then update appropriate fields
 // in USER_DATA, otherwise, create an entry
-function initialize(tab) {
-    console.log(tab.url);
-    let matchObj = tab.url.match(DOC_REGEX);
+function initialize(tabId, callback) {
+    let matchObj = openTabs[tabId].docId;
 
     chrome.storage.local.get([USER_DATA], (rv) => {
         if (rv.USER_DATA[matchObj[1]] == undefined) {
@@ -56,6 +55,7 @@ function initialize(tab) {
                 },
                 (result) => {
                     console.log("USER_DATA: " + result);
+                    callback();
                 });
         }
 
@@ -137,23 +137,41 @@ function countParagraphs() {
     return paragraphCount;
 }
 
-function updateTimeElapsedInSec(tabId, callback) {
-    console.log(openTabs);
-    if (openTabs[tabId] != undefined) {
-        chrome.storage.local.get([USER_DATA], (rv) => {
-            let docId = openTabs[tabId].docId;
-            if (rv.USER_DATA[docId] != undefined) {
+function updateTimeElapsedInSec(tabId, tab, callback) {
+    if (openTabs[tabId] == undefined) {
+        initialize(tab, () => {
+            chrome.storage.local.get([USER_DATA], (rv) => {
+                let docId = openTabs[tabId].docId;
+                console.log(openTabs[tabId], new Date());
                 let USER_DATA_COPY = Object.assign({}, rv.USER_DATA);
                 USER_DATA_COPY[docId].docInfo.timeEditingInSec += (new Date() - openTabs[tabId].startTime) / msToS;
                 // console.log(USER_DATA_COPY);
+                console.log(USER_DATA_COPY);
                 chrome.storage.local.set({
                     "USER_DATA": USER_DATA_COPY
                 }, (result) => {
                     console.log("USER_DATA: " + result);
+                    callback();
                 });
-            }
+        })
         });
+        return;
     }
+        console.log(openTabs);
+        chrome.storage.local.get([USER_DATA], (rv) => {
+            let docId = openTabs[tabId].docId;
+            console.log(openTabs[tabId], new Date());
+            let USER_DATA_COPY = Object.assign({}, rv.USER_DATA);
+            USER_DATA_COPY[docId].docInfo.timeEditingInSec += (new Date() - openTabs[tabId].startTime) / msToS;
+            // console.log(USER_DATA_COPY);
+            console.log(USER_DATA_COPY);
+            chrome.storage.local.set({
+                "USER_DATA": USER_DATA_COPY
+            }, (result) => {
+                console.log("USER_DATA: " + result);
+                callback();
+            });
+        });
 }
 // ON INSTALL OPERATIONS
 chrome.runtime.onInstalled.addListener(() => {
@@ -198,32 +216,58 @@ chrome.tabs.onCreated.addListener((tab) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     let currentUrl = tab.url;
 
+    // if the url matches the regular expression and the url has been changed
     if (checkUrl(tab.url) && (changeInfo.url != undefined)) {
-        // console.log("onUpdate");
+        // If new tab is already logged in openTabs, 
+        //  then update time elapsed for the docId previously associated with that tabId
+        // Else
+        //  add the tabId to openTabs
+        
+        console.log("place 1");
         if (openTabs[tabId] != undefined) {
-            updateTimeElapsedInSec(tabId);
-            openTabs[tabId] = {
-                docId: tab.url.match(DOC_REGEX)[1],
-                startTime: new Date()
-            };
+            console.log("place 1a");
+            let oldDocId = openTabs[tabId].docId;
+            let newDocId = tab.url.match(DOC_REGEX)[1];
+            if (newDocId != oldDocId) {
+                openTabs[tabId] = {
+                    docId: tab.url.match(DOC_REGEX)[1],
+                    startTime: new Date()
+                };
+                updateTimeElapsedInSec(tabId, tab, () => {
+            });
+            }
         }
         else {
+            console.log("place 1b");
             openTabs[tabId] = {
                 docId: tab.url.match(DOC_REGEX)[1],
                 startTime: new Date()
             };
-
+            updateTimeElapsedInSec(tabId, tab, ()=>{
+                
+            });
         } //else if (checkUrl())
-
-
+        
             // If we navigate away from the previous document, update time spent and 
             // create new tab_open_time for this document
-        initialize(tab);
     }
 
-    else if (checkUrl(tab.url) && changeInfo.url == undefined) {
-        let prevDocId = openTabs[tabId].docId;
-        let newDocId = tab.url.match(DOC_REGEX)[1];
+    // else if (checkUrl(tab.url) && changeInfo.url == undefined) {
+    //     // Do nothing
+    //     console.log("place 2");
+    // }
+
+    else if (!checkUrl(tab.url)) {
+        console.log("place 3");
+
+        updateTimeElapsedInSec(tabId, tab, () => {
+            console.log("deleting tab " + tabId);
+            delete openTabs[tabId];
+        });
+    }
+
+    else {
+        console.log("place 4");
     }
 
     // else if (changeInfo.url == undefined) {
@@ -234,7 +278,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 chrome.tabs.onRemoved.addListener((tabId, _) => {
-    updateTimeElapsedInSec(tabId, () => {
+    updateTimeElapsedInSec(tabId, tab, () => {
+        console.log("deleting tab:" + tabId);
         delete openTabs[tabId];
     });
 });
