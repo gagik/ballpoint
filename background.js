@@ -30,6 +30,63 @@ function initialize() {
 
 }
 
+// Intended for Google Docs. Counts and returns the number of lines on the current document
+function countLines() {
+    let page = document.getElementsByClassName("kix-zoomdocumentplugin-outer")[0];
+    let lineCount = 0;
+    const pageText = page.innerText;
+
+    for (let i = 0; i < pageText.length; i++) {
+        if (pageText.charAt(i) == '\n') {
+            lineCount++;
+        }
+    }
+    return lineCount;
+}
+
+// Intended for Google Docs. Counts and returns the number of paragraphs on the current document. 
+// Paragraphs are defined as two consecutive new line characters after character text.
+function countParagraphs() {
+    const NEWLINE = 10;
+    const SPACE1 = 160;
+    const SPACE2 = 8204;
+    const TABSPACE = 9;
+
+    let page = document.getElementsByClassName("kix-zoomdocumentplugin-outer")[0];
+    let paragraphCount = 0;
+    let isConsecutive = false;
+    let isCounted = false;
+    const pageText = page.innerText;
+
+    // Loops through any blank space at the start.
+    let startIndex;
+    for (startIndex = 0; startIndex < pageText.length; startIndex++) {
+        const VALUE = pageText.charCodeAt(startIndex);
+        if (VALUE != NEWLINE && VALUE != SPACE1 && VALUE != SPACE2 && VALUE != TABSPACE) {
+            break;
+        }
+    }
+
+    // Loops through the remaining text to find paragraphs
+    for (; startIndex < pageText.length; startIndex++) {
+        const VALUE = pageText.charCodeAt(startIndex);
+
+        if (VALUE == NEWLINE) {
+            if (isConsecutive && !isCounted) {
+                paragraphCount++;
+                isCounted = true;
+            }
+            isConsecutive = true;
+        }
+        else if (!isConsecutive || (VALUE != SPACE1) && (VALUE != SPACE2)) {
+            isConsecutive = false;
+            isCounted = false;
+        }
+    }
+    
+    return paragraphCount;
+}
+
 // ON INSTALL OPERATIONS
 chrome.runtime.onInstalled.addListener(()=>{
     // Initialize USER_DATA field with intended structure:
