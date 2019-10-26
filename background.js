@@ -48,3 +48,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.tabs.onRemoved.addListener((tabId, _) => {
 
 });
+
+
+// Checks if wordCount is the same as wordTarget. Returns true if count is same, false otherwise. 
+function wordCheck(wordCount, wordTarget){
+    if(wordCount==wordTarget){
+        return true;
+    }else{
+        return false; 
+    }
+}
