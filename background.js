@@ -32,6 +32,19 @@ function initialize() {
 
 // ON INSTALL OPERATIONS
 chrome.runtime.onInstalled.addListener(()=>{
+    // Initialize USER_DATA field with intended structure:
+    // {
+    //   <doc_id> : {
+    //      prefStatus : {},
+    //      docInfo: {}
+    //    }
+    // }
+    chrome.storage.sync.set({
+        USER_DATA: {}
+    }, (result) => {
+        console.log("Initialized USER_DATA: " + result);
+    });
+
     // Take user to options/about page
 });
 
