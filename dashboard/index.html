@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="lib/jquery-3.4.1.min.js"></script>
+        </script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Crimson+Text|Work+Sans:400,700" rel="stylesheet">
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <!-- Compiled and minified JavaScript -->
+        <script src="lib/materialize.min.js"></script>
+        <script src="core/textarea_tabs.js"></script>
+        <script src="core/templates.js"></script>
+        <script src="index.js"></script>
+        <script src="save.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>Ballpoint</title>
+    </head>
+    <body>
+        <div class="dashboard container">
+            <div class="setup">
+                <div class="setup-text">
+                    <div class="centered">
+                        <img class="logo" src="assets/logo.svg">
+                    </div>
+                    <h2>I want to write
+                        <div class="select input-field">
+                            <select class="paper-type">
+                                <option value="1" selected>a paper</option>
+                                <option value="2">a story</option>
+                                <option value="3">a poem</option>
+                            </select>
+                        </div>
+                    </h2>
+                    <h2> with
+                            <div style="width:40px" class="goal_count input-field">
+                                    <input class="goal-1" placeholder="5" type="text">
+                            </div>
+                            <div style="width:135px" class="select input-field">
+                                <select class="goals goal-1">
+                                    <option value="paragraphs" selected>paragraphs</option>
+                                    <option value="words">words</option>
+                                    <option value="outline">this outline</option>
+                                </select>
+                            </div>
+                            <a class="add-button"><i class="material-icons black white-text">add</i></a>
+                    </h2>
+                </div>
+            </div>
+            <div class="action">
+                <a id="begin" class="waves-effect waves-grey btn-flat">Begin<i class="material-icons right">chevron_right</i></a>
+            </div>
+        </div>
+    </body>
+</html>
