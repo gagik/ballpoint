@@ -1,2 +1,2 @@
-# ballpoint
-Helping you finish
+# Ballpoint
+Overlay productivity templates with Google Docs

@@ -262,13 +262,3 @@ chrome.tabs.onRemoved.addListener((tabId, _) => {
         }
     }
 });
-
-// chrome.runtime.onMessage.addListener(
-//     function(message, callback) {
-//     console.log(message);
-//       if (message == "runContentScript") {
-//         chrome.tabs.executeScript({
-//           file: 'content.js'
-//         });
-//       }
-// });
