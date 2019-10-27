@@ -32,6 +32,10 @@ function checkUrl(url) {
     return false;
 }
 
+function getDocIdFromUrl(url) {
+    return url.match(DOC_REGEX)[1];
+}
+
 // Checks if wordCount is the same as wordTarget. Returns true if count is same, false otherwise. 
 function wordCheck(wordCount, wordTarget) {
     if (wordCount == wordTarget) {
@@ -42,7 +46,7 @@ function wordCheck(wordCount, wordTarget) {
 }
 // Check if doc_id has already been saved. If yes, then update appropriate fields
 // in USER_DATA, otherwise, create an entry
-function initializeDocument(docID, tab, callback, args) {
+function initializeDocument(docID, callback) {
     chrome.storage.local.get(USER_DATA, (data) => {
         data = data[USER_DATA];
         if (data[docID] == undefined) { // docID not present
@@ -60,19 +64,20 @@ function initializeDocument(docID, tab, callback, args) {
         }
         else {
             console.log(`${docID} already initialized`);
+            callback();
         }
         callback(...args);
     });
 }
 
-function focusOnDocument(docID, tab, callback, args) {
+function focusOnDocument(docID, callback) {
     chrome.storage.local.get(USER_DATA, (items) => {
         items = items[USER_DATA];
         if (items[docID] == undefined) {
             console.error(`document with docID: ${docID} not found`);
         }
         else {
-            window.documentClock = window.setInterval(() => {
+            window["updater_" + docID] = window.setInterval(() => {
                 chrome.storage.local.get(USER_DATA, (data) => {
                     data = data[USER_DATA];
                     if (data[docID] == undefined) {
@@ -80,15 +85,10 @@ function focusOnDocument(docID, tab, callback, args) {
                     }
                     else {
                         // let docInfoCopy = Object.assign({}, data[docID]);
-                        if (activeDocID != null && activeDocID.docID === docID) {
-                            data[docID].docInfo.timeEditingInSec++;
-                            console.log("added second, ", data[docID].docInfo.timeEditingInSec);
-                            activeDocID = {
-                                tabID: tab.id,
-                                docID: docID};
+                        data[docID].docInfo.timeEditingInSec++;
+                        console.log("added second, ", data[docID].docInfo.timeEditingInSec);
                             // let currentElapsedTime = items[docID].docInfo.timeEditingInSec;
-                            chrome.storage.local.set({USER_DATA: data});
-                        }
+                        chrome.storage.local.set({USER_DATA: data});
                     }
                 });
             }, 1000);
@@ -97,7 +97,7 @@ function focusOnDocument(docID, tab, callback, args) {
     //callback(...args);
 }
 
-function defocusDocument(docID, callback, args) {
+function defocusDocument(docID, callback) {
     if (docID != null) {
         chrome.storage.local.get(USER_DATA, (items) => {
             items = items[USER_DATA];
@@ -105,9 +105,9 @@ function defocusDocument(docID, callback, args) {
                 console.error(`document with docID: ${docID} not found`);
             }
             else {
-                window.clearInterval(window.documentClock);
-                activeDocID = null;
+                window.clearInterval(window["updater_" + docID]);
             }
+            callback();
         });
     }
 
@@ -219,14 +219,21 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
 // When new tab is created run script if its url matches regex for open Google doc
 chrome.tabs.onCreated.addListener((tab) => {
     console.log("created");
-    if (checkUrl(tab.url)) {
-        defocusDocument(activeDocID)
-        initializeDocument(docID, tab, focusOnDocument, [docID, null, null]);
+    // if (checkUrl(tab.url)) {
+    //     createDocFromTab(tab);
+        // initializeDocument(docID, tab, focusOnDocument, [docID, null, null]);
     //     console.log("onCreate");
     //     // Create tab_open_time
     //     initialize(tab);
     } 
-});
+);
+
+function createDocFromTab(tab, tabId) {
+    let docID = getDocIdFromUrl(tab.url);
+
+    openTabs[tabId] = docID;
+    initializeDocument(docID, () => {focusOnDocument(docID, ()=>{})});
+}
 
 // When tab is updated run script if its url matches regex for open Google doc
 // FIXME: DOES NOT UPDATE TIME ELAPSED FOR ORIGINAL
@@ -238,16 +245,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
     // if the url matches the regular expression and the url has been changed
     // (Accounts for new window)
+    // ctonsole.log(changeInfo);
     if (checkUrl(tab.url) && (changeInfo.url != undefined)) {
-        console.log("valid");
-        let docID = tab.url.match(DOC_REGEX)[1];
-
-        initializeDocument(docID, tab, focusOnDocument, [docID]);
+        if(getDocIdFromUrl(tab.url) != openTabs[tabId]) {
+            console.log("trying to defocus");
+            defocusDocument(openTabs[tabId], () => {});
+        }
+        createDocFromTab(tab, tabId);
         // Start timer
     }
     else if (!checkUrl(tab.url)) {
-        console.log("valid");
-        defocusDocument(activeDocID, ()=>{}, []);
+        defocusDocument(openTabs[tabId], () => {});
     }
 
 });
@@ -255,10 +263,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // chrome.tabs.onActiveChanged
 
 chrome.tabs.onRemoved.addListener((tabId, _) => {
-     
-    if (activeDocID != null) {
-        if (tabId == activeDocID.tabID) {
-            defocusDocument(activeDocID.docID, ()=>{}, []);
-        }
+    let docId = openTabs[tabId];
+    if(docId != undefined) {
+        console.log("removed and defocused");
+        defocusDocument(docId, ()=>{
+            delete openTabs[tabId];
+        });
     }
 });
