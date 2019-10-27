@@ -24,7 +24,7 @@
 		"all_frames": true,
 		"run_at": "document_idle",
 		"css": ["content.css"],
-		"js": ["dashboard/lib/jquery-3.4.1.min.js", "injectUI.js"]
+		"js": ["dashboard/lib/jquery-3.4.1.min.js", "injectUI.js", "textAnalysis.js"]
 		}
 	],
 	"icons": {
