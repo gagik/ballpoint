@@ -18,7 +18,9 @@ const msToS = 1000;
 
 // GLOBAL VARIABLES
 let openTabs = {};
-// FUNCTIONS
+
+
+
 
 // Return True if input string url matches active Google Doc url structure
 // Return False otherwise
@@ -196,8 +198,6 @@ chrome.tabs.onCreated.addListener((tab) => {
 // DOCUMENT WHEN THE SAME TAB IS NAVIGATED TO A NEW
 // URL
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    let currentUrl = tab.url;
-
     if (checkUrl(tab.url) && (changeInfo.url != undefined)) {
         // console.log("onUpdate");
         if (openTabs[tabId] != undefined) {
@@ -238,3 +238,13 @@ chrome.tabs.onRemoved.addListener((tabId, _) => {
         delete openTabs[tabId];
     });
 });
+
+chrome.runtime.onMessage.addListener(
+    function(message, callback) {
+    console.log(message);
+      if (message == "runContentScript") {
+        chrome.tabs.executeScript({
+          file: 'Content.js'
+        });
+      }
+   });
