@@ -16,11 +16,15 @@
 			"128":"images/get_started128.png"
 		}
 	},	
+	"web_accessible_resources": ["dashboard/index.html",
+	"dashboard/assets/Crimson.ttf"],
 	"content_scripts":[
 		{
-		"matches": ["https://*/*"],
+		"matches": ["*://docs.google.com/document/d/*"],
+		"all_frames": true,
 		"run_at": "document_idle",
-		"js": ["content.js"]
+		"css": ["content.css"],
+		"js": ["dashboard/lib/jquery-3.4.1.min.js", "injectUI.js"]
 		}
 	],
 	"icons": {

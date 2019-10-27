@@ -1,5 +1,8 @@
-var currentDocId = 0;
+var currentDocId = undefined;
 const USER_DATA = "USER_DATA";
+
+let params = new URLSearchParams(location.search);
+currentDocId = params.get('docId');
 
 function err() {
     M.toast({html: 'Please enter a valid value'});
@@ -39,9 +42,13 @@ function getGoal(goalNumber) {
 function modifyDocData(docId, options) {
     chrome.storage.local.get(USER_DATA, (data) => {
         data = data[USER_DATA];
+        if(!data) {
+            console.error("User data not defined. Send help.");
+            return;
+        }
         data[docId] = !data[docId] ? {} : data[docId];  
         data[docId].options = options;
-        chrome.storage.local.set({USER_DATA: options});
+        chrome.storage.local.set({USER_DATA: data});
     });
 }
 
@@ -51,6 +58,8 @@ $(document).ready(function() {
         let p1 = getGoal(1);
         let p2 = getGoal(2);
         if(p1 == {}) return;
+        if(currentDocId == undefined) return;
         modifyDocData(currentDocId, {...p1, ...p2});
+        window.close();
     });
 });
