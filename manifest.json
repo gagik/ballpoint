@@ -20,7 +20,7 @@
 		{
 		"matches": ["https://*/*"],
 		"run_at": "document_idle",
-		"js": ["Content.js"]
+		"js": ["content.js"]
 		}
 	],
 	"icons": {

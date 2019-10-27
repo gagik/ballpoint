@@ -2,7 +2,7 @@
 function startButton() {
     let button = document.createElement("button");
     button.addEventListener("click", function() {
-        console.log("we cummin for ya");
+        console.log();
     });
 
     let target=document.getElementsByClassName("docs-title-outer docs-title-inline-rename");
