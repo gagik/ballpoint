@@ -1,2 +1,2 @@
 # BallPoint
-Overlay productivity templates with Google Docs
+Structuring productivity and creativity with Google Docs
