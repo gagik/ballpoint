@@ -271,4 +271,4 @@ chrome.runtime.onMessage.addListener(
           file: 'Content.js'
         });
       }
-   });
+});
