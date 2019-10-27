@@ -11,7 +11,8 @@ const NEW_DOC_INFO = {
     "docInfo": {
         "wordCount": 0,
         "paragraphCount": 0,
-        "timeEditingInSec": 0
+        "timeEditingInSec": 0,
+        "isOn": 0
     }
 };
 const msToS = 1000;
@@ -66,7 +67,8 @@ function initializeDocument(docID, tab, callback, args) {
                 docInfo: {
                     wordCount: 0,
                     paragraphCount: 0,
-                    timeEditingInSec: 0
+                    timeEditingInSec: 0,
+                    isOn: 0,
                 },
                 prefStatus: {}
             };
@@ -207,16 +209,21 @@ function countParagraphs() {
 
 // Call function to set update() on a timed loop
 
-// NEED A BETTER WAY TO RUN THE UPDATE() CONTINUOUSLY - SHOULD BE ON/OFF
 // SHOULD BE CALLED WHEN EXTENSION IS TURNED ON BY THE DOCUMENT
 function runUpdates() {
-    let checkOn = chrome.storage.local.get(["isOn"], function(result) {
-        console.log(result.isOn)});
+    let checkOn;
     
-    while (checkOn.isOn == 1) {
+    chrome.storage.local.get(USER_DATA, (data) => {
+        data = data[USERDATA];
+        checkOn = data.isOn;
+    });
+
+    while (checkOn == 1) {
         setTimeout(update, 200);
-        checkOn = chrome.storage.local.get(["isOn"], function(result) {
-            console.log(result.isOn)});
+        chrome.storage.local.get(USER_DATA, (data) => {
+            data = data[USERDATA];
+            checkOn = data.isOn;
+        });
     }
 }
 
@@ -225,28 +232,6 @@ function runUpdates() {
 function update() {
     let pCount = countParagraphs();
     let wCount = countWords();
-
-    // need to determine how to read in this data correctly.
-    // const addValues = (pCount, wCount) => {
-    //     chrome.storage.local.get(['paragraphCount'], function(result) {
-    //         if (result.paragraphCount === undefined) {
-    //             chrome.storage.local.set({"paragraphCount" : pCount});
-    //         }
-    //         else if (result.paragraphCount !== pCount){
-    //             chrome.storage.local.set({"paragraphCount" : pCount});
-    //         }
-    //     });
-
-    //     chrome.storage.local.get(['wordCount'], function(result) {
-    //         if (result.wordCount === undefined) {
-    //             chrome.storage.local.set({"wordCount" : wCount});
-    //         }
-    //         else if (result.wordCount !== wCount){
-    //             chrome.storage.local.set({"wordCount" : wCount});
-    
-    //         }
-    //     });
-    // };
 
     const addValues = (pCount, wCount) => {chrome.storage.local.get(USER_DATA, (data) => {
             data = data[USERDATA];
@@ -300,7 +285,6 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 
     // gives an indicator variable for whether the google extension ought to be running or not on the document.
-    chrome.storage.local.set({"isOn": 0});
 
     alert("Installed!");
     // Take user to options/about page
@@ -350,7 +334,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             };
 
         } //else if (checkUrl())
-
 
             // If we navigate away from the previous document, update time spent and 
             // create new tab_open_time for this document
