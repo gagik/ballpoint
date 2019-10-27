@@ -108,8 +108,16 @@ function countParagraphs() {
 // Call function to set update() on a timed loop
 
 // NEED A BETTER WAY TO RUN THE UPDATE() CONTINUOUSLY - SHOULD BE ON/OFF
+// SHOULD BE CALLED WHEN EXTENSION IS TURNED ON BY THE DOCUMENT
 function runUpdates() {
-    setInterval(update, 200);
+    let checkOn = chrome.storage.local.get(["isOn"], function(result) {
+        console.log(result.isOn)});
+    
+    while (checkOn.isOn == 1) {
+        setTimeout(update, 200);
+        checkOn = chrome.storage.local.get(["isOn"], function(result) {
+            console.log(result.isOn)});
+    }
 }
 
 // Counts paragraphs and words on the document and updates values in storage.local if
@@ -158,6 +166,9 @@ chrome.runtime.onInstalled.addListener(()=>{
     }, (result) => {
         console.log("Initialized USER_DATA: " + result);
     });
+
+    // gives an indicator variable for whether the google extension ought to be running or not on the document.
+    chrome.storage.local.set({"isOn": 0});
 
     // Take user to options/about page
 });
