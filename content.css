@@ -60,6 +60,11 @@
     font-weight: 800;
 }
 
+@keyframes moveIn {
+    from {bottom:-270px;}
+    to {bottom: 0px;}
+  }
+
 .bp-sidebar {
     font-family: 'Crimson';
     width: 250px;
@@ -68,11 +73,20 @@
     position: absolute;
     border: 0.5px #1F2126 solid;
     right: 30px;
-    bottom: 0px;
+    animation-delay: 500ms;
+    animation-name: moveIn;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
 }
 
 .bp-sidebar .bp-header {
     height: 35px;
+    line-height: 35px;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+    font-size:20px;
+    color: #fff;
     background: #000;
 }
 

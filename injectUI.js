@@ -48,6 +48,13 @@ function updateSidebar(sidebar) {
         }
         if(options["paragraphs"] != undefined) {
             text += getSidebarText(docInfo.paragraphCount, options["paragraphs"], "paragraphs");
+            if(docInfo.paragraphCount >= options["paragraphs"] && reachGoal["paragraphs"] != true) 
+            {
+                mdtoast('Congrats! You reached your paragraph count goal for this session!', {type: "success"});
+                reachGoal["paragraphs"] = true;
+            } else if(docInfo.wordCount < options["paragraphs"] && reachGoal["paragraphs"] == true) {
+                reachGoal["paragraphs"] = false;
+            }
         }
         if(options["words"] != undefined) {
             text += getSidebarText(docInfo.wordCount, options["words"], "words");
@@ -67,7 +74,7 @@ function initiateSidebar() {
     let mod_sidebar = [
         '<div class="bp-sidebar">',
             '<div class="bp-header">',
-            '<div class="bp-logo">; bp</div>',
+            '<div class="bp-logo">ballpoint</div>',
             '</div>',
             '<div class="bp-content">',
             '</div>',
