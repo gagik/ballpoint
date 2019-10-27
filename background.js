@@ -7,7 +7,7 @@ const WORD_COUNT = "wordCount";
 const PAR_COUNT = "paragraphCount";
 const TIME_EDITING = "timeEditingInSec";
 const NEW_DOC_INFO = {
-    "prefStatus": {},
+    "options": {},
     "docInfo": {
         "wordCount": 0,
         "paragraphCount": 0,
@@ -56,17 +56,15 @@ function initializeDocument(docID, callback) {
                     paragraphCount: 0,
                     timeEditingInSec: 0
                 },
-                prefStatus: {}
+                options: {}
             };
             chrome.storage.local.set({USER_DATA:data});
-            focusOnDocument(docID, tab, ()=>{}, []);
-            // focusOnDocument(docID, null, null);
+            callback();
         }
         else {
             console.log(`${docID} already initialized`);
             callback();
         }
-        callback(...args);
     });
 }
 
@@ -86,8 +84,6 @@ function focusOnDocument(docID, callback) {
                     else {
                         // let docInfoCopy = Object.assign({}, data[docID]);
                         data[docID].docInfo.timeEditingInSec++;
-                        console.log("added second, ", data[docID].docInfo.timeEditingInSec);
-                            // let currentElapsedTime = items[docID].docInfo.timeEditingInSec;
                         chrome.storage.local.set({USER_DATA: data});
                     }
                 });
@@ -118,7 +114,7 @@ function defocusDocument(docID, callback) {
 function countWords() {
     let page = document.getElementsByClassName("kix-zoomdocumentplugin-outer")[0];
     if (page == null) {
-        alert("Element does not exist on the document.")
+        return ("Element does not exist on the document.")
     }
     const pageText = page.innerText;
     const words = pageText.split(" ");
@@ -130,7 +126,7 @@ function countWords() {
 function countLines() {
     let page = document.getElementsByClassName("kix-zoomdocumentplugin-outer")[0];
     if (page == null) {
-        alert("Element does not exist on the document.")
+        return ("Element does not exist on the document.")
     }
     let lineCount = 0;
     const pageText = page.innerText;
@@ -153,7 +149,7 @@ function countParagraphs() {
 
     let page = document.getElementsByClassName("kix-zoomdocumentplugin-outer")[0];
     if (page == null) {
-        alert("Element does not exist on the document.")
+        return ("Element does not exist on the document.")
     }
     let paragraphCount = 0;
     let isConsecutive = false;
@@ -203,7 +199,7 @@ chrome.runtime.onInstalled.addListener(() => {
     }, (result) => {
         console.log("Initialized USER_DATA: " + result);
     });
-    alert("Installed!");
+    return ("Installed!");
     // Take user to options/about page
 });
 
@@ -215,18 +211,6 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
     }]);
 });
 
-
-// When new tab is created run script if its url matches regex for open Google doc
-chrome.tabs.onCreated.addListener((tab) => {
-    console.log("created");
-    // if (checkUrl(tab.url)) {
-    //     createDocFromTab(tab);
-        // initializeDocument(docID, tab, focusOnDocument, [docID, null, null]);
-    //     console.log("onCreate");
-    //     // Create tab_open_time
-    //     initialize(tab);
-    } 
-);
 
 function createDocFromTab(tab, tabId) {
     let docID = getDocIdFromUrl(tab.url);

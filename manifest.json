@@ -2,7 +2,10 @@
 	"name": "Ballpoint",
 	"version": "1.0",
 	"description": "Ballpoint - Helping you finish",
-	"permissions": ["activeTab", "storage", "declarativeContent", "tabs", "notifications", "commands"],
+	"permissions": ["activeTab", "storage", "declarativeContent", "tabs", "notifications", "commands",
+			"http://fonts.googleapis.com/",
+			"https://fonts.googleapis.com/"
+	],
 	"background" : {
 		"scripts": ["background.js"],
 		"persistent":false
@@ -16,15 +19,15 @@
 			"128":"images/get_started128.png"
 		}
 	},	
-	"web_accessible_resources": ["dashboard/index.html",
-	"dashboard/assets/Crimson.ttf"],
+	"web_accessible_resources": ["dashboard/index.html", "content.css", "fonts/Crimson-Bold.ttf", "fonts/Crimson-Regular.ttf",
+		"fonts/Icons-Regular.ttf"],
 	"content_scripts":[
 		{
 		"matches": ["*://docs.google.com/document/d/*"],
 		"all_frames": true,
 		"run_at": "document_idle",
-		"css": ["content.css"],
-		"js": ["dashboard/lib/jquery-3.4.1.min.js", "injectUI.js", "textAnalysis.js"]
+		"css": ["toast.css", "content.css"],
+		"js": ["dashboard/lib/jquery-3.4.1.min.js", "textAnalysis.js", "injectUI.js"]
 		}
 	],
 	"icons": {

@@ -39,7 +39,7 @@ function getGoal(goalNumber) {
     return newObj;
 }
 
-function modifyDocData(docId, options) {
+function modifyDocData(docId, options, callback) {
     chrome.storage.local.get(USER_DATA, (data) => {
         data = data[USER_DATA];
         if(!data) {
@@ -48,18 +48,16 @@ function modifyDocData(docId, options) {
         }
         data[docId] = !data[docId] ? {} : data[docId];  
         data[docId].options = options;
-        chrome.storage.local.set({USER_DATA: data});
+        chrome.storage.local.set({USER_DATA: data}, callback);
     });
 }
 
 $(document).ready(function() {
     $("#begin").click(function() {
-        let arr = [];
         let p1 = getGoal(1);
         let p2 = getGoal(2);
         if(p1 == {}) return;
         if(currentDocId == undefined) return;
-        modifyDocData(currentDocId, {...p1, ...p2});
-        window.close();
+        modifyDocData(currentDocId, {...p1, ...p2}, window.close);
     });
 });

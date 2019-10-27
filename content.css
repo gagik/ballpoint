@@ -1,3 +1,22 @@
+@font-face {
+    font-family: 'Crimson';
+    font-weight: 400;
+    src: url('chrome-extension://__MSG_@@extension_id__/fonts/Crimson-Regular.ttf') /* ... */;
+  }
+
+@font-face {
+    font-family: 'Crimson';
+    font-weight: 700;
+    src: url('chrome-extension://__MSG_@@extension_id__/fonts/Crimson-Bold.ttf') /* ... */;
+  }
+  
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url('chrome-extension://__MSG_@@extension_id__/fonts/Icons-Regular.ttf') format('truetype');
+}
+
 #docs-titlebar-container {
     max-height:40px !important;
 }
@@ -6,6 +25,7 @@
 }
 .setup_button {
     display:inline-block;
+    font-family: 'Crimson';
     width: 100px;
     height: 30px;
     font-size: 15px;
@@ -17,10 +37,11 @@
 
 .setup_button .content {
     width: 70px;
+    line-height:35px;
     background-color: white;
 }
 .setup_button .arrow {
-    width: 25px;
+    width: 30px;
     font-family: serif;
     color: white;
     font-weight: bold;
@@ -32,4 +53,70 @@
     vertical-align: middle;
     text-align: center;
     display: inline-block;
+}
+
+.bp-sidebar a {
+    color: #000 !important;
+    font-weight: 800;
+}
+
+.bp-sidebar {
+    font-family: 'Crimson';
+    width: 250px;
+    height: 270px;
+    background: #fff;
+    position: absolute;
+    border: 0.5px #1F2126 solid;
+    right: 30px;
+    bottom: 0px;
+}
+
+.bp-sidebar .bp-header {
+    height: 35px;
+    background: #000;
+}
+
+.bp-sidebar .bp-content {
+    text-align: left;
+    padding: 20px 20px 20px 20px;
+    font-size: 22px;
+}
+
+.docs-explore-widget.docs-ui-unprintable {
+    display: none;
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-flex;
+    vertical-align: top;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+}
+
+.outline-goal * {
+    vertical-align: middle;
+}
+
+.outline-goal i {
+    line-height: 17px;
+    font-size: 20px;
+    margin-top: -8px;
+    margin-right: 7px;
 }

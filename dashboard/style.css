@@ -7,12 +7,23 @@ body {
     background: var(--bg);
 }
 
+@keyframes moveIn {
+    from {margin-top:-600px;}
+    to {margin-top:40px;}
+  }
+
 .dashboard {
-    margin-top: 40px;
     max-width: 600px;
     background: white;
     padding-top: 50px;
     padding-bottom:40px;
+    animation-name: moveIn;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+.dashboard .container {
+    display: none;
 }
 
 .dashboard .action {
